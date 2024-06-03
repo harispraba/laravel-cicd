@@ -1,0 +1,7 @@
+.env*
+*.md
+vendor/
+.editorconfig
+.git/
+.gitattributes
+.gitignore
