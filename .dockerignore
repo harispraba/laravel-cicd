@@ -18,17 +18,15 @@ vendor/**/Tests*
 **.gitattributes
 **.sass-cache
 *.env*
-composer.json
 
 *.config.js
 ?ulpfile.js
 ?untfile.js
-package.json
-phpunit.xml
-readme.md
+*.md
 phpspec.yml
 
 Dockerfile
 docker-compose.yml
-run
-run.ps1
+
+nginx/*
+Jenkinsfile
