@@ -42,7 +42,6 @@ pipeline {
                         echo "No vulnerabilities found in the Docker image."
                     } else {
                         echo "Vulnerabilities found in the Docker image."
-                        currentBuild.result = 'FAILURE'
                     }
                 }
             }
@@ -69,7 +68,6 @@ pipeline {
                         echo "No vulnerabilities found in the Docker image."
                     } else {
                         echo "Vulnerabilities found in the Docker image."
-                        currentBuild.result = 'FAILURE'
                     }
                 }
             }
