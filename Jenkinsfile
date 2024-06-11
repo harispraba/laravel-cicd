@@ -2,8 +2,8 @@ pipeline {
     agent any
 
     environment {
-        DOCKER_REGISTRY = 'ghcr.io/jawaracloud'
-        DOCKER_IMAGE = 'laravel-filament'
+        DOCKER_REGISTRY='ghcr.io'
+        DOCKER_IMAGE='jawaracloud/laravel-filament'
     }
 
     stages {
@@ -41,7 +41,7 @@ pipeline {
                 script {
                     withCredentials([usernamePassword(credentialsId: 'docker_credentials_id', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASSWORD')]) {
                         echo 'Logging in to Docker registry...'
-                        sh 'echo $DOCKER_REGISTRY_PASSWORD | docker login $DOCKER_REGISTRY -u $DOCKER_REGISTRY_USERNAME --password-stdin'
+                        sh 'echo $DOCKER_PASSWORD | docker login $DOCKER_REGISTRY -u $DOCKER_USER --password-stdin'
                     }
                 }
             }
