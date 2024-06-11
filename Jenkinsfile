@@ -33,11 +33,16 @@ pipeline {
                 script {
                     // Run Trivy to scan the source code
                     def trivyOutput = sh(script: "trivy fs --scanners vuln,secret,misconfig .", returnStdout: true).trim()
-                    if (trivyOutput.contains("No results found")) {
-                        echo "No vulnerabilities found in the source code."
+
+                    // Display Trivy scan results
+                    println trivyOutput
+
+                    // Check if vulnerabilities were found
+                    if (trivyOutput.contains("Total: 0")) {
+                        echo "No vulnerabilities found in the Docker image."
                     } else {
-                        echo "Vulnerabilities found in the source code."
-                        echo trivyOutput
+                        echo "Vulnerabilities found in the Docker image."
+                        currentBuild.result = 'FAILURE'
                     }
                 }
             }
@@ -64,7 +69,7 @@ pipeline {
                         echo "No vulnerabilities found in the Docker image."
                     } else {
                         echo "Vulnerabilities found in the Docker image."
-                        exit 1
+                        currentBuild.result = 'FAILURE'
                     }
                 }
             }
