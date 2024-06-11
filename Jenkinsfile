@@ -32,7 +32,7 @@ pipeline {
             steps {
                 script {
                     // Run Trivy to scan the source code
-                    def trivyOutput = sh(script: "trivy fs --scanners vuln,secret,misconfig", returnStdout: true).trim()
+                    def trivyOutput = sh(script: "trivy fs --scanners vuln,secret,misconfig .", returnStdout: true).trim()
                     if (trivyOutput.contains("No results found")) {
                         echo "No vulnerabilities found in the source code."
                     } else {
@@ -54,7 +54,7 @@ pipeline {
             steps {
                 script {
                     // Run Trivy to scan the Docker image
-                    def trivyOutput = sh(script: "trivy -q image --exit-code 1 --severity CRITICAL --light $DOCKER_REGISTRY/$DOCKER_IMAGE:${GIT_TAG}", returnStdout: true).trim()
+                    def trivyOutput = sh(script: "trivy image --exit-code 1 --severity CRITICAL --light $DOCKER_REGISTRY/$DOCKER_IMAGE:${GIT_TAG}", returnStdout: true).trim()
 
                     // Display Trivy scan results
                     println trivyOutput
