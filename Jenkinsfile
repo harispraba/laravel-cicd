@@ -1,11 +1,5 @@
 pipeline {
     agent any
-
-    environment {
-        DOCKER_REGISTRY='ghcr.io'
-        DOCKER_IMAGE='jawaracloud/laravel-filament'
-    }
-
     stages {
         stage('Info') {
             steps {
@@ -28,20 +22,57 @@ pipeline {
                 }
             }
         }
-        stage('Scanning Source Code') {
+        stage('Parse Config') {
             steps {
                 script {
-                    // Run Trivy to scan the source code
-                    def trivyOutput = sh(script: "trivy fs --scanners vuln,secret,misconfig .", returnStdout: true).trim()
+                    // Parse the configuration file
+                    def config = readYaml file: 'build-config.yaml'
+                    // Set the configuration variables App
+                    APP_NAME = config.config.app.name
+                    APP_DESCRIPTION = config.config.app.description
+                    MAINTAINER = config.config.maintainer
+                    // Set the configuration variables Docker
+                    DOCKER_REGISTRY = config.config.registry.url
+                    DOCKER_IMAGE = config.config.image.name
+                    DOCKER_USERNAME = config.config.registry.username
+                    DOCKER_URL = $DOCKER_REGISTRY + '/' + $DOCKER_USERNAME + '/' + $DOCKER_IMAGE
+                    // Display the configuration
+                    echo "App Name: ${APP_NAME}"
+                    echo "App Description: ${APP_DESCRIPTION}"
+                    echo "Maintainer: ${MAINTAINER}"
+                    echo "Docker URL: ${DOCKER_URL}"
+                    echo "Version: ${GIT_TAG}"
+                }
+            }
+        }
+        stage('Parallel Scanning') {
+            parallel {
+                stage('Scanning Source Code with Trivy') {
+                    steps {
+                        script {
+                            // Run Trivy to scan the source code
+                            def trivyOutput = sh(script: "trivy fs --scanners vuln,secret,misconfig --exit-code 1 --severity CRITICAL .", returnStdout: true).trim()
 
-                    // Display Trivy scan results
-                    println trivyOutput
+                            // Display Trivy scan results
+                            println trivyOutput
 
-                    // Check if vulnerabilities were found
-                    if (trivyOutput.contains("Total: 0")) {
-                        echo "No vulnerabilities found in the Docker image."
-                    } else {
-                        echo "Vulnerabilities found in the Docker image."
+                            // Check if vulnerabilities were found
+                            if (trivyOutput.contains("Total: 0")) {
+                                echo "No vulnerabilities found in the source code."
+                            } else {
+                                echo "Vulnerabilities found in the source code."
+                            }
+                        }
+                    }
+                }
+                stage('Scanning Source Code with SonarQube') {
+                    steps {
+                        script {
+                            // Run SonarQube analysis
+                            withSonarQubeEnv('SonarQube') {
+                                sh 'sonar-scanner'
+                            }
+                        }
                     }
                 }
             }
@@ -50,7 +81,7 @@ pipeline {
             steps {
                 script {
                     echo 'Building Docker image...'
-                    sh "docker build -t $DOCKER_REGISTRY/$DOCKER_IMAGE:${GIT_TAG} ."
+                    sh "docker build -t ${DOCKER_URL}:${GIT_TAG} ."
                 }
             }
         }
@@ -58,7 +89,7 @@ pipeline {
             steps {
                 script {
                     // Run Trivy to scan the Docker image
-                    def trivyOutput = sh(script: "trivy image --exit-code 1 --severity CRITICAL --light $DOCKER_REGISTRY/$DOCKER_IMAGE:${GIT_TAG}", returnStdout: true).trim()
+                    def trivyOutput = sh(script: "trivy image --exit-code 1 --severity CRITICAL --light ${DOCKER_URL}:${GIT_TAG}", returnStdout: true).trim()
 
                     // Display Trivy scan results
                     println trivyOutput
@@ -86,7 +117,7 @@ pipeline {
             steps {
                 script {
                     echo 'Pushing Docker image...'
-                    sh "docker push $DOCKER_REGISTRY/$DOCKER_IMAGE:${GIT_TAG}"
+                    sh "docker push ${DOCKER_URL}:${GIT_TAG}"
                 }
             }
         }
