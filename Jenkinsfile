@@ -28,18 +28,7 @@ pipeline {
                 }
             }
         }
-        stage('Print Branch') {
-            steps {
-                script {
-                    echo "Current branch is: ${env.BRANCH_NAME}"
-                    sh 'echo Branch name: ${GIT_BRANCH}'
-                }
-            }
-        }
         stage('Build') {
-            when {
-                branch 'main'
-            }
             steps {
                 script {
                     echo 'Building Docker image...'
@@ -48,9 +37,6 @@ pipeline {
             }
         }
         stage('Docker Login') {
-            when {
-                branch 'main'
-            }
             steps {
                 script {
                     withCredentials([usernamePassword(credentialsId: 'docker_credentials_id', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASSWORD')]) {
@@ -61,9 +47,6 @@ pipeline {
             }
         }
         stage('Image Push') {
-            when {
-                branch 'main'
-            }
             steps {
                 script {
                     echo 'Pushing Docker image...'
