@@ -73,4 +73,4 @@ echo "Starting PHP-FPM..."
 php-fpm
 
 # Keep the container running by tailing the PHP-FPM log
-tail -f /var/log/php7.4-fpm.log
+tail -f /var/log/php*-fpm.log
