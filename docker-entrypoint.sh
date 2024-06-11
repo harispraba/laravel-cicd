@@ -15,6 +15,7 @@ if check_table_exists; then
 else
     echo "Migrations table does not exist. Running migrations."
     php artisan migrate --force
+    php artisan db:seed --force
 fi
 
 # Generate the application key (only if not already set)
@@ -23,4 +24,4 @@ if [ -z "$APP_KEY" ]; then
 fi
 
 # Start supervisord
-exec supervisord -c /etc/supervisor/conf.d/supervisord.conf
+exec supervisord -c /etc/supervisor/conf.d/supervisord.conf "$@"
