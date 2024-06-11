@@ -1,0 +1,9 @@
+config:
+  maintainer: John Doe
+  app:
+    name: Laravel Filament App
+    description: My App
+  registry:
+    url: ghcr.io
+    username: jawaracloud
+    image: laravel-filament
