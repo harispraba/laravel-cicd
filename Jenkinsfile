@@ -28,6 +28,14 @@ pipeline {
                 }
             }
         }
+        stage('Print Branch') {
+            steps {
+                script {
+                    echo "Current branch is: ${env.BRANCH_NAME}"
+                    sh 'echo Branch name: ${GIT_BRANCH}'
+                }
+            }
+        }
         stage('Build') {
             when {
                 branch 'main'
