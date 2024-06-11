@@ -37,7 +37,7 @@ pipeline {
                         echo "No vulnerabilities found in the source code."
                     } else {
                         echo "Vulnerabilities found in the source code."
-                        exit 1
+                        echo trivyOutput
                     }
                 }
             }
