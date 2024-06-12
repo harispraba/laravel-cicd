@@ -8,7 +8,14 @@ pipeline {
         }
         stage('Checkout') {
             steps {
-                checkout scm
+                echo "Triggered by tag: ${env.tag_name}"
+                checkout([
+                    $class: 'GitSCM',
+                    branches: [[name: "refs/tags/${env.tag_name}"]],
+                    doGenerateSubmoduleConfigurations: false,
+                    extensions: [],
+                    userRemoteConfigs: [[url: env.REPO_URL]]
+                ])
             }
         }
         stage('Get Git Tag') {
