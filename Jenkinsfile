@@ -1,5 +1,15 @@
 pipeline {
     agent any
+    environment {
+        GIT_TAG = 'latest'
+        APP_NAME = ''
+        APP_DESCRIPTION = ''
+        MAINTAINER = ''
+        DOCKER_REGISTRY = ''
+        DOCKER_IMAGE = ''
+        DOCKER_USERNAME = ''
+        DOCKER_URL = ''
+    }
     stages {
         stage('Info') {
             steps {
@@ -14,10 +24,7 @@ pipeline {
         stage('Get Git Tag') {
             steps {
                 script {
-                    GIT_TAG = sh(returnStdout: true, script: "git describe --tags --match 'v[0-9]*' --abbrev=0 || echo ''").trim()
-                    if (GIT_TAG == '') {
-                        GIT_TAG = 'latest'
-                    }
+                    GIT_TAG = sh(script: "git describe --tags --match 'v[0-9]*' --abbrev=0 || echo 'latest'", returnStdout: true).trim()
                     echo "Git Tag: ${GIT_TAG}"
                 }
             }
@@ -25,16 +32,17 @@ pipeline {
         stage('Parse Config') {
             steps {
                 script {
-                    // Parse the configuration file
-                    // Set the configuration variables App
-                    APP_NAME = sh(script: "cat build-config.yaml | /usr/bin/yq -C .config.app.name", returnStdout: true).trim()
-                    APP_DESCRIPTION = sh(script: "cat build-config.yaml | /usr/bin/yq -C .config.app.description", returnStdout: true).trim()
-                    MAINTAINER = sh(script: "cat build-config.yaml | /usr/bin/yq -C .config.maintainer", returnStdout: true).trim()
-                    // Set the configuration variables Docker
-                    DOCKER_REGISTRY = sh(script: "cat build-config.yaml | /usr/bin/yq -C .config.registry.url", returnStdout: true).trim()
-                    DOCKER_IMAGE = sh(script: "cat build-config.yaml | /usr/bin/yq -C .config.registry.image", returnStdout: true).trim()
-                    DOCKER_USERNAME = sh(script: "cat build-config.yaml | /usr/bin/yq -C .config.registry.username", returnStdout: true).trim()
-                    DOCKER_URL = sh(script: "echo ${DOCKER_REGISTRY}/${DOCKER_USERNAME}/${DOCKER_IMAGE}", returnStdout: true).trim()
+                    def config = readYaml(file: 'build-config.yaml')
+
+                    // Set the configuration variables from YAML
+                    APP_NAME = config.config.app.name
+                    APP_DESCRIPTION = config.config.app.description
+                    MAINTAINER = config.config.maintainer
+                    DOCKER_REGISTRY = config.config.registry.url
+                    DOCKER_IMAGE = config.config.registry.image
+                    DOCKER_USERNAME = config.config.registry.username
+                    DOCKER_URL = "${DOCKER_REGISTRY}/${DOCKER_USERNAME}/${DOCKER_IMAGE}"
+
                     // Display the configuration
                     echo "App Name: ${APP_NAME}"
                     echo "App Description: ${APP_DESCRIPTION}"
@@ -52,7 +60,7 @@ pipeline {
                             // Run Trivy to scan the source code
                             def trivyOutput = sh(script: "trivy fs --scanners vuln,secret,misconfig .", returnStdout: true).trim()
                             // Display Trivy scan results
-                            println trivyOutput
+                            echo trivyOutput
                             // Check if vulnerabilities were found
                             if (trivyOutput.contains("Total: 0")) {
                                 echo "No vulnerabilities found in the source code."
@@ -67,7 +75,7 @@ pipeline {
                         script {
                             withSonarQubeEnv('SonarQube') {
                                 echo 'Running SonarQube Scanner...'
-                                sh '/opt/sonar-scanner/bin/sonar-scanner -Dsonar.projectKey=jenkins-laravel -Dsonar.sources=.'
+                                sh "/opt/sonar-scanner/bin/sonar-scanner -Dsonar.projectKey=${APP_NAME} -Dsonar.sources=."
                             }
                         }
                     }
@@ -88,7 +96,7 @@ pipeline {
                     // Run Trivy to scan the Docker image
                     def trivyOutput = sh(script: "trivy image --scanners vuln ${DOCKER_URL}:${GIT_TAG}", returnStdout: true).trim()
                     // Display Trivy scan results
-                    println trivyOutput
+                    echo trivyOutput
                     // Check if vulnerabilities were found
                     if (trivyOutput.contains("Total: 0")) {
                         echo "No vulnerabilities found in the Docker image."
@@ -102,8 +110,8 @@ pipeline {
             steps {
                 script {
                     withCredentials([usernamePassword(credentialsId: 'container_registry', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASSWORD')]) {
-                        echo 'Logging in to Docker registry ${DOCKER_REGISTRY}'
-                        sh 'echo $DOCKER_PASSWORD | docker login ${DOCKER_REGISTRY} -u $DOCKER_USER --password-stdin'
+                        echo "Logging in to Docker registry ${DOCKER_REGISTRY}"
+                        sh "echo \$DOCKER_PASSWORD | docker login ${DOCKER_REGISTRY} -u \$DOCKER_USER --password-stdin"
                     }
                 }
             }
