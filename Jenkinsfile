@@ -26,15 +26,14 @@ pipeline {
             steps {
                 script {
                     // Parse the configuration file
-                    def config = readYaml file: 'build-config.yaml'
                     // Set the configuration variables App
-                    APP_NAME = config.config.app.name
-                    APP_DESCRIPTION = config.config.app.description
-                    MAINTAINER = config.config.maintainer
+                    APP_NAME = sh(script: "cat build-config.yaml | yq -C .config.app.name", returnStdout: true).trim()
+                    APP_DESCRIPTION = sh(script: "cat build-config.yaml | yq -C .config.app.description", returnStdout: true).trim()
+                    MAINTAINER = sh(script: "cat build-config.yaml | yq -C .config.maintainer", returnStdout: true).trim()
                     // Set the configuration variables Docker
-                    DOCKER_REGISTRY = config.config.registry.url
-                    DOCKER_IMAGE = config.config.image.name
-                    DOCKER_USERNAME = config.config.registry.username
+                    DOCKER_REGISTRY = sh(script: "cat build-config.yaml | yq -C .config.registry.url", returnStdout: true).trim()
+                    DOCKER_IMAGE = sh(script: "cat build-config.yaml | yq -C .config.registry.image", returnStdout: true).trim()
+                    DOCKER_USERNAME = sh(script: "cat build-config.yaml | yq -C .config.registry.username", returnStdout: true).trim()
                     DOCKER_URL = $DOCKER_REGISTRY + '/' + $DOCKER_USERNAME + '/' + $DOCKER_IMAGE
                     // Display the configuration
                     echo "App Name: ${APP_NAME}"
