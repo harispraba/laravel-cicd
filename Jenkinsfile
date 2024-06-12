@@ -4,7 +4,7 @@ pipeline {
         when {
             anyOf {
                 branch 'main'
-                tag "^v\d+\.\d+\.\d+$"
+                tag pattern: '^v\\d+\\.\\d+\\.\\d+$'
             }
         }
         stage('Info') {
