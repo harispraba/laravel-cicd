@@ -52,7 +52,7 @@ pipeline {
                     steps {
                         script {
                             // Run Trivy to scan the source code
-                            def trivyOutput = sh(script: "trivy fs --scanners vuln,secret,misconfig --exit-code 1 .", returnStdout: true).trim()
+                            def trivyOutput = sh(script: "trivy fs --scanners vuln,secret,misconfig .", returnStdout: true).trim()
                             // Display Trivy scan results
                             println trivyOutput
                             // Check if vulnerabilities were found
@@ -68,7 +68,7 @@ pipeline {
                     steps {
                         script {
                             withSonarQubeEnv('SonarQube') {
-                                sh '/opt/sonar-scanner/bin/sonar-scanner -Dsonar.projectKey=jenkins-laravel -Dsonar.sources=.'
+                                sh '/opt/sonar-scanner/bin/sonar-scanner -Dsonar.projectKey=$SONARQUBE_PROJECT_KEY -Dsonar.sources=.'
                             }
                         }
                     }
@@ -87,7 +87,7 @@ pipeline {
             steps {
                 script {
                     // Run Trivy to scan the Docker image
-                    def trivyOutput = sh(script: "trivy image --exit-code 1 --light ${DOCKER_URL}:${GIT_TAG}", returnStdout: true).trim()
+                    def trivyOutput = sh(script: "trivy image --light ${DOCKER_URL}:${GIT_TAG}", returnStdout: true).trim()
                     // Display Trivy scan results
                     println trivyOutput
                     // Check if vulnerabilities were found

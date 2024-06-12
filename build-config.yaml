@@ -1,8 +1,9 @@
 config:
-  maintainer: John Doe
+  maintainer: Tra
   app:
     name: Laravel Filament App
     description: My App
+    domain: http://localhost
   registry:
     url: ghcr.io
     username: jawaracloud
