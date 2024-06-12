@@ -27,13 +27,13 @@ pipeline {
                 script {
                     // Parse the configuration file
                     // Set the configuration variables App
-                    APP_NAME = sh(script: "cat build-config.yaml | yq -C .config.app.name", returnStdout: true).trim()
-                    APP_DESCRIPTION = sh(script: "cat build-config.yaml | yq -C .config.app.description", returnStdout: true).trim()
-                    MAINTAINER = sh(script: "cat build-config.yaml | yq -C .config.maintainer", returnStdout: true).trim()
+                    APP_NAME = sh(script: "cat build-config.yaml | /usr/bin/yq -C .config.app.name", returnStdout: true).trim()
+                    APP_DESCRIPTION = sh(script: "cat build-config.yaml | /usr/bin/yq -C .config.app.description", returnStdout: true).trim()
+                    MAINTAINER = sh(script: "cat build-config.yaml | /usr/bin/yq -C .config.maintainer", returnStdout: true).trim()
                     // Set the configuration variables Docker
-                    DOCKER_REGISTRY = sh(script: "cat build-config.yaml | yq -C .config.registry.url", returnStdout: true).trim()
-                    DOCKER_IMAGE = sh(script: "cat build-config.yaml | yq -C .config.registry.image", returnStdout: true).trim()
-                    DOCKER_USERNAME = sh(script: "cat build-config.yaml | yq -C .config.registry.username", returnStdout: true).trim()
+                    DOCKER_REGISTRY = sh(script: "cat build-config.yaml | /usr/bin/yq -C .config.registry.url", returnStdout: true).trim()
+                    DOCKER_IMAGE = sh(script: "cat build-config.yaml | /usr/bin/yq -C .config.registry.image", returnStdout: true).trim()
+                    DOCKER_USERNAME = sh(script: "cat build-config.yaml | /usr/bin/yq -C .config.registry.username", returnStdout: true).trim()
                     DOCKER_URL = $DOCKER_REGISTRY + '/' + $DOCKER_USERNAME + '/' + $DOCKER_IMAGE
                     // Display the configuration
                     echo "App Name: ${APP_NAME}"
