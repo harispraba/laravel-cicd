@@ -1,0 +1,35 @@
+version: "3.8"
+name: mysql-laravel-app
+services:
+  mysql:
+    image: mysql:5.7
+    container_name: mysql
+    restart: always
+    ports:
+      - 3306:3306
+    environment:
+      MYSQL_HOST: 0.0.0.0
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: laravel
+      MYSQL_USER: user
+      MYSQL_PASSWORD: password
+      MYSQL_RANDOM_ROOT_PASSWORD: no
+    networks:
+      - backend
+    volumes:
+      - mysql-data:/var/lib/mysql
+      # - ./dump.sql:/docker-entrypoint-initdb.d/dump.sql << For importing sql file
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 1m
+      timeout: 10s
+      retries: 3
+
+networks:
+  backend:
+    name: backend
+    driver: bridge
+volumes:
+  mysql-data:
+    name: mysql-data
+    driver: local

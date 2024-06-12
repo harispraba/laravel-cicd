@@ -123,11 +123,12 @@ pipeline {
         stage('Deploy to Server') {
            steps {
                script {
-                   echo 'Deploying to server...'
-                   sh "sed -i 's|DOCKER_URL|${DOCKER_URL}|g' docker-compose.yml"
-                   sh "cat docker-compose.yml | grep ${DOCKER_URL}"
-                   // sh "scp docker-compose.yml user@server:/path/to/deploy"
-                   // sh "ssh user@server 'docker compose -f /path/to/deploy/docker-compose.yml up -d'"
+                    withCredentials([sshUserPrivateKey(credentialsId: 'server_deployment', keyFileVariable: 'SSH_KEY', usernameVariable: 'SSH_USER')]) {
+                        echo 'Deploying to server...'
+                        sh "sed -i 's|DOCKER_URL|${DOCKER_URL}|g' docker-compose.yml"
+                        // sh "scp docker-compose.yml user@server:/path/to/deploy"
+                        // sh "ssh user@server 'docker compose -f /path/to/deploy/docker-compose.yml up -d'"
+                    }
                }
            }
         }
