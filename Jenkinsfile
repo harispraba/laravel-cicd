@@ -70,7 +70,7 @@ pipeline {
                         script {
                             // Run SonarQube analysis
                             withSonarQubeEnv('SonarQube') {
-                                sh 'sonar-scanner'
+                                sh '${scannerHome}/bin/sonar-scanner'
                             }
                         }
                     }
