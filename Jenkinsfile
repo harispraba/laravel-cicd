@@ -50,11 +50,9 @@ pipeline {
                     steps {
                         script {
                             // Run Trivy to scan the source code
-                            def trivyOutput = sh(script: "trivy fs --scanners vuln,secret,misconfig --exit-code 1 --severity CRITICAL .", returnStdout: true).trim()
-
+                            def trivyOutput = sh(script: "trivy fs --scanners vuln,secret,misconfig --exit-code 1 .", returnStdout: true).trim()
                             // Display Trivy scan results
                             println trivyOutput
-
                             // Check if vulnerabilities were found
                             if (trivyOutput.contains("Total: 0")) {
                                 echo "No vulnerabilities found in the source code."
@@ -67,7 +65,6 @@ pipeline {
                 stage('Scanning Source Code with SonarQube') {
                     steps {
                         script {
-                            // Run SonarQube analysis
                             withSonarQubeEnv('SonarQube') {
                                 sh '${scannerHome}/bin/sonar-scanner'
                             }
@@ -88,11 +85,9 @@ pipeline {
             steps {
                 script {
                     // Run Trivy to scan the Docker image
-                    def trivyOutput = sh(script: "trivy image --exit-code 1 --severity CRITICAL --light ${DOCKER_URL}:${GIT_TAG}", returnStdout: true).trim()
-
+                    def trivyOutput = sh(script: "trivy image --exit-code 1 --light ${DOCKER_URL}:${GIT_TAG}", returnStdout: true).trim()
                     // Display Trivy scan results
                     println trivyOutput
-
                     // Check if vulnerabilities were found
                     if (trivyOutput.contains("Total: 0")) {
                         echo "No vulnerabilities found in the Docker image."
