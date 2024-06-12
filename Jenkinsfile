@@ -1,6 +1,12 @@
 pipeline {
     agent any
     stages {
+        when {
+            anyOf {
+                branch 'main'
+                tag "/^v\d+\.\d+\.\d+$/"
+            }
+        }
         stage('Info') {
             steps {
                 echo 'Starting the pipeline...'
@@ -32,6 +38,8 @@ pipeline {
                     DOCKER_IMAGE = sh(script: "cat build-config.yaml | /usr/bin/yq -C .config.registry.image", returnStdout: true).trim()
                     DOCKER_USERNAME = sh(script: "cat build-config.yaml | /usr/bin/yq -C .config.registry.username", returnStdout: true).trim()
                     DOCKER_URL = sh(script: "echo ${DOCKER_REGISTRY}/${DOCKER_USERNAME}/${DOCKER_IMAGE}:${GIT_TAG}", returnStdout: true).trim()
+                    // Set the configuration SonarQube
+                    SONAR_PROJECT_KEY = sh(script: "cat build-config.yaml | /usr/bin/yq -C .config.sonarqube.project_key", returnStdout: true).trim()
                     // Display the configuration
                     echo "App Name: ${APP_NAME}"
                     echo "App Description: ${APP_DESCRIPTION}"
@@ -64,7 +72,7 @@ pipeline {
                         script {
                             withSonarQubeEnv('SonarQube') {
                                 echo 'Running SonarQube Scanner...'
-                                sh '/opt/sonar-scanner/bin/sonar-scanner -Dsonar.projectKey=jenkins-laravel -Dsonar.sources=.'
+                                sh "/opt/sonar-scanner/bin/sonar-scanner -Dsonar.projectKey=${SONAR_PROJECT_KEY} -Dsonar.sources=."
                             }
                         }
                     }
@@ -112,6 +120,17 @@ pipeline {
                     sh "docker push ${DOCKER_URL}"
                 }
             }
+        }
+    }
+    post {
+        always {
+            echo "I will always say Hello again!"
+        }
+        success {
+            echo "I will only say Hello if the pipeline is successful!"
+        }
+        failure {
+            echo "I will only say Hello if the pipeline has failed!"
         }
     }
 }
