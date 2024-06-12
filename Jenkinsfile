@@ -53,10 +53,11 @@ pipeline {
                             // Display Trivy scan results
                             println trivyOutput
                             // Check if vulnerabilities were found
-                            if (trivyOutput.contains("Total: 0")) {
+                            if (trivyOutput.contains("Failures: 0")) {
                                 echo "No vulnerabilities found in the source code."
                             } else {
                                 echo "Vulnerabilities found in the source code."
+                                // error "Vulnerabilities found in the source code."
                             }
                         }
                     }
@@ -93,6 +94,7 @@ pipeline {
                         echo "No vulnerabilities found in the Docker image."
                     } else {
                         echo "Vulnerabilities found in the Docker image."
+                        // error "Vulnerabilities found in the Docker image."
                     }
                 }
             }
@@ -115,6 +117,25 @@ pipeline {
                 }
             }
         }
+        stage('Deploy to Server') {
+           steps {
+               script {
+                   echo 'Deploying to server...'
+                   sh "sed -i 's|DOCKER_URL|${DOCKER_URL}|g' docker-compose.yml"
+                   sh "cat docker-compose.yml | grep ${DOCKER_URL}"
+                   // sh "scp docker-compose.yml user@server:/path/to/deploy"
+                   // sh "ssh user@server 'docker compose -f /path/to/deploy/docker-compose.yml up -d'"
+               }
+           }
+        }
+        // stage('Cleanup') {
+        //     steps {
+        //         script {
+        //             echo 'Cleaning up...'
+        //             sh "docker rmi ${DOCKER_URL}"
+        //         }
+        //     }
+        // }
     }
     post {
         always {
