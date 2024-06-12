@@ -132,14 +132,6 @@ pipeline {
                }
            }
         }
-        // stage('Cleanup') {
-        //     steps {
-        //         script {
-        //             echo 'Cleaning up...'
-        //             sh "docker rmi ${DOCKER_URL}"
-        //         }
-        //     }
-        // }
     }
     post {
         always {

@@ -166,3 +166,12 @@ password: admin
 9. Set the SSL verification: check if you use SSL
 10. Set the Which events would you like to trigger this webhook?: Let me select individual events, checklist Pushes and Branch or tag creation.
 11. Click Add webhook
+
+## Test the Pipeline
+1. Clone the repository
+2. Create some changes
+3. Push the changes to the repository with the tag
+4. Check the Jenkins pipeline
+5. Check the SonarQube
+6. Check the Docker Container Registry
+7. Check the Server Deployment
