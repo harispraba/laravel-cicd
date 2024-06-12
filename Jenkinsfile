@@ -34,7 +34,7 @@ pipeline {
                     DOCKER_REGISTRY = sh(script: "cat build-config.yaml | /usr/bin/yq -C .config.registry.url", returnStdout: true).trim()
                     DOCKER_IMAGE = sh(script: "cat build-config.yaml | /usr/bin/yq -C .config.registry.image", returnStdout: true).trim()
                     DOCKER_USERNAME = sh(script: "cat build-config.yaml | /usr/bin/yq -C .config.registry.username", returnStdout: true).trim()
-                    DOCKER_URL = ${DOCKER_REGISTRY} + '/' + ${DOCKER_USERNAME} + '/' + ${DOCKER_IMAGE}
+                    DOCKER_URL = sh(script: "echo ${DOCKER_REGISTRY}/${DOCKER_USERNAME}/${DOCKER_IMAGE}", returnStdout: true).trim()
                     // Display the configuration
                     echo "App Name: ${APP_NAME}"
                     echo "App Description: ${APP_DESCRIPTION}"
