@@ -35,6 +35,8 @@ pipeline {
                     DOCKER_IMAGE = sh(script: "cat build-config.yaml | /usr/bin/yq -C .config.registry.image", returnStdout: true).trim()
                     DOCKER_USERNAME = sh(script: "cat build-config.yaml | /usr/bin/yq -C .config.registry.username", returnStdout: true).trim()
                     DOCKER_URL = sh(script: "echo ${DOCKER_REGISTRY}/${DOCKER_USERNAME}/${DOCKER_IMAGE}", returnStdout: true).trim()
+                    // Set the configuration SonarQube
+                    SONARQUBE_PROJECT_KEY = sh(script: "cat build-config.yaml | /usr/bin/yq -C .config.sonarqube.project_key", returnStdout: true).trim()
                     // Display the configuration
                     echo "App Name: ${APP_NAME}"
                     echo "App Description: ${APP_DESCRIPTION}"
@@ -66,7 +68,7 @@ pipeline {
                     steps {
                         script {
                             withSonarQubeEnv('SonarQube') {
-                                sh '/opt/sonar-scanner/bin/sonar-scanner'
+                                sh '/opt/sonar-scanner/bin/sonar-scanner -Dsonar.projectKey=${SONARQUBE_PROJECT_KEY} -Dsonar.sources=. \'
                             }
                         }
                     }
