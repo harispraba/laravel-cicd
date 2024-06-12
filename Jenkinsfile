@@ -86,7 +86,7 @@ pipeline {
             steps {
                 script {
                     // Run Trivy to scan the Docker image
-                    def trivyOutput = sh(script: "trivy image --light ${DOCKER_URL}:${GIT_TAG}", returnStdout: true).trim()
+                    def trivyOutput = sh(script: "trivy image ${DOCKER_URL}:${GIT_TAG}", returnStdout: true).trim()
                     // Display Trivy scan results
                     println trivyOutput
                     // Check if vulnerabilities were found
