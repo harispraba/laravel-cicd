@@ -68,7 +68,7 @@ pipeline {
                             def scannerHome = tool '/opt/sonar-scanner/'
                             withSonarQubeEnv('SonarQube') {
                                 echo 'Running SonarQube Scanner...'
-                                sh '${scannerHome}/bin/sonar-scanner -Dsonar.projectKey=jenkins-laravel -Dsonar.sources=.'
+                                sh '${scannerHome}bin/sonar-scanner -Dsonar.projectKey=jenkins-laravel -Dsonar.sources=.'
                             }
                         }
                     }
