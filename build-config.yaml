@@ -8,5 +8,3 @@ config:
     url: ghcr.io
     username: jawaracloud
     image: laravel-filament
-  sonarqube:
-    project_key: jenkins-laravel

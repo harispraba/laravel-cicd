@@ -65,11 +65,10 @@ pipeline {
                 stage('Scanning Source Code with SonarQube') {
                     steps {
                         script {
+                            def scannerHome = tool '/opt/sonar-scanner'
                             withSonarQubeEnv('SonarQube') {
-                                def projectKey = sh(script: "cat build-config.yaml | /usr/bin/yq -C .config.sonarqube.project_key", returnStdout: true).trim()
                                 echo 'Running SonarQube Scanner...'
-                                echo "SonarQube Project Key: ${projectKey}"
-                                sh '/opt/sonar-scanner/bin/sonar-scanner -Dsonar.projectKey=${projectKey} -Dsonar.sources=.'
+                                sh '${scannerHome}/bin/sonar-scanner -Dsonar.projectKey=jenkins-laravel -Dsonar.sources=.'
                             }
                         }
                     }
