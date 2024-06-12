@@ -1,7 +1,7 @@
 # Laravel CI/CD with Jenkins
 This is a simple example of how to use Jenkins to deploy a Laravel application to a server.
 
-![Laravel CI/CD with Jenkins](./flow.jpg, "Laravel CI/CD with Jenkins")
+![Laravel CI/CD with Jenkins](./flow.jpg "Laravel CI/CD with Jenkins")
 
 ## Table of Contents
 - [Requirements](#requirements)
