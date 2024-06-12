@@ -68,7 +68,7 @@ pipeline {
                     steps {
                         script {
                             withSonarQubeEnv('SonarQube') {
-                                sh '/opt/sonar-scanner/bin/sonar-scanner -Dsonar.projectKey=${SONARQUBE_PROJECT_KEY} -Dsonar.sources=.'
+                                sh '/opt/sonar-scanner/bin/sonar-scanner -Dsonar.projectKey=jenkins-laravel -Dsonar.sources=.'
                             }
                         }
                     }
