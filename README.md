@@ -3,7 +3,7 @@ This is a simple example of how to use Jenkins to deploy a Laravel application t
 
 ## Table of Contents
 - [Requirements](#requirements)
-- [Setup Jenkins Configuration as a Code](#setup-jenkins-configuration-as-a-code)
+- [Setup Jenkins](#setup-jenkins)
 - [Setup Laravel Application in Local](#setup-laravel-application-in-local)
 - [Setup Laravel Application in Jenkins](#setup-laravel-application-in-jenkins)
 
@@ -21,7 +21,7 @@ This is a simple example of how to use Jenkins to deploy a Laravel application t
 - [Yarn](https://yarnpkg.com/)
 - [MySQL](https://www.mysql.com/)
 
-## Setup Jenkins Configuration as a Code
+## Setup Jenkins
 1. Clone this repository
 ```bash
 git clone https://github.com/jawaracloud/jenkins-casc
@@ -33,6 +33,8 @@ docker compose up -d
 3. Login to Jenkins
 username: admin
 password: nimda
+
+## Setup SonarQube
 
 ## Setup Laravel Application in Local
 1. Clone this repository
