@@ -66,7 +66,7 @@ pipeline {
                     steps {
                         script {
                             withSonarQubeEnv('SonarQube') {
-                                sh 'sonar-scanner'
+                                sh '/opt/sonar-scanner/bin/sonar-scanner'
                             }
                         }
                     }
