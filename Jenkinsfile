@@ -1,12 +1,6 @@
 pipeline {
     agent any
     stages {
-        when {
-            anyOf {
-                branch 'main'
-                tag pattern: '^v\\d+\\.\\d+\\.\\d+$'
-            }
-        }
         stage('Info') {
             steps {
                 echo 'Starting the pipeline...'
