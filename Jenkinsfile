@@ -127,12 +127,12 @@ pipeline {
                         sshUserPrivateKey(credentialsId: 'server_deployment', keyFileVariable: 'SSH_KEY', usernameVariable: 'SSH_USER'),
                         string(credentialsId: 'ip_server_deployment', variable: 'SERVER')
                     ]) {
-                        sh '''
+                        sh
                             mkdir -p ~/.ssh
                             echo "$SSH_KEY" > ~/.ssh/id_rsa
                             chmod 600 ~/.ssh/id_rsa
                             sed -i 's|DOCKER_URL|${DOCKER_URL}|g' docker-compose.yml
-                            cat docker-compose.yml | grep ${DOCKER_URL}
+                            cat docker-compose.yml
                             scp -v -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa docker-compose.yml $SSH_USER@$SERVER:/opt/deployment-manifests/docker-compose.yml
                             ssh -v -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa $SSH_USER@$SERVER 'docker-compose -f /opt/deployment-manifests/docker-compose.yml up -d'
                         '''
