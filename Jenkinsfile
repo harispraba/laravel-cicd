@@ -6,6 +6,12 @@ pipeline {
                 echo 'Starting the pipeline...'
             }
         }
+        stage('Clean Workspace') {
+            steps {
+                echo 'Cleaning workspace...'
+                deleteDir()
+            }
+        }
         stage('Checkout') {
             steps {
                 checkout scm: [
@@ -130,7 +136,7 @@ pipeline {
                         echo 'Deploying to server...'
                         // Replace DOCKER_URL in the local docker-compose.yml
                         sh "sed -i 's|DOCKER_URL|${DOCKER_URL}|g' docker-compose.yml"
-
+                        sh "cat docker-compose.yml"
                         // Copy the modified docker-compose.yml to the remote server
                         sh "scp -i $SSH_KEY docker-compose.yml $SSH_USER@$SERVER:/opt/deployment-manifests/docker-compose.yml"
 
