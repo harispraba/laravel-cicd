@@ -6,12 +6,6 @@ pipeline {
                 echo 'Starting the pipeline...'
             }
         }
-        stage('Clean Workspace') {
-            steps {
-                echo 'Cleaning workspace...'
-                deleteDir()
-            }
-        }
         stage('Checkout') {
             steps {
                 checkout scm: [
