@@ -128,7 +128,8 @@ pipeline {
                         string(credentialsId: 'ip_server_deployment', variable: 'SERVER')
                     ]) {
                         echo 'Deploying to server...'
-                        sh "mkdir -p ~/.ssh && cp ${SSH_KEY} ~/.ssh/id_rsa"
+                        sh "mkdir -p ~/.ssh && touch ~/.ssh/id_rsa"
+                        sh "cp ${SSH_KEY} ~/.ssh/id_rsa"
                         sh "chmod 600 ~/.ssh/id_rsa"
                         // Replace DOCKER_URL in the local docker-compose.yml
                         sh "sed -i 's|DOCKER_URL|${DOCKER_URL}|g' docker-compose.yml"
