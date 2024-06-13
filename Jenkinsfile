@@ -123,11 +123,14 @@ pipeline {
         stage('Deploy to Server') {
            steps {
                script {
-                    withCredentials([sshUserPrivateKey(credentialsId: 'server_deployment', keyFileVariable: 'SSH_KEY', usernameVariable: 'SSH_USER')]) {
-                        echo 'Deploying to server...'
-                        sh "sed -i 's|DOCKER_URL|${DOCKER_URL}|g' docker-compose.yml"
-                        // sh "scp docker-compose.yml user@server:/path/to/deploy"
-                        // sh "ssh user@server 'docker compose -f /path/to/deploy/docker-compose.yml up -d'"
+                    withCredentials([
+                        sshUserPrivateKey(credentialsId: 'server_deployment', keyFileVariable: 'SSH_KEY', usernameVariable: 'SSH_USER')
+                        string(credentialsId: 'ip_server_deployment', variable: 'SERVER')
+                        ]) {
+                            echo 'Deploying to server...'
+                            sh "sed -i 's|DOCKER_URL|${DOCKER_URL}|g' docker-compose.yml"
+                            sh "scp -i $SSH_KEY -r docker-compose.yml $SSH_USER@$SERVER:/opt/deployment-manifests/"
+                            sh "ssh -i $SSH_KEY $SSH_USER@$SERVER 'docker compose -f /opt/deployment-manifests/docker-compose.yml up -d'"
                     }
                }
            }
@@ -142,6 +145,10 @@ pipeline {
         }
         failure {
             echo "I will only say Hello if the pipeline has failed!"
+        }
+    }
+}
+led!"
         }
     }
 }
