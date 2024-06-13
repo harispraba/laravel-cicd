@@ -134,6 +134,7 @@ pipeline {
                         // Copy the modified docker-compose.yml to the remote server
                         sh "echo $SSH_KEY > key.pem"
                         sh "chmod 600 key.pem"
+                        sh "cat key.pem"
                         sh "scp -v -o StrictHostKeyChecking=no -i key.pem docker-compose.yml $SSH_USER@$SERVER:/opt/deployment-manifests/docker-compose.yml"
                         // Execute the Docker Compose command on the remote server
                         sh "ssh -v -o StrictHostKeyChecking=no -i key.pem $SSH_USER@$SERVER 'docker-compose -f /opt/deployment-manifests/docker-compose.yml up -d'"
