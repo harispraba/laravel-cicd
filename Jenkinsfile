@@ -121,19 +121,24 @@ pipeline {
             }
         }
         stage('Deploy to Server') {
-           steps {
-               script {
+            steps {
+                script {
                     withCredentials([
                         sshUserPrivateKey(credentialsId: 'server_deployment', keyFileVariable: 'SSH_KEY', usernameVariable: 'SSH_USER'),
                         string(credentialsId: 'ip_server_deployment', variable: 'SERVER')
-                        ]) {
-                            echo 'Deploying to server...'
-                            sh "sed -i 's|DOCKER_URL|${DOCKER_URL}|g' docker-compose.yml"
-                            sh "ssh -i $SSH_KEY $SSH_USER@$SERVER 'cat >> /opt/deployment-manifests/docker-compose.yml' < docker-compose.yml"
-                            sh "ssh -i $SSH_KEY $SSH_USER@$SERVER 'docker compose -f /opt/deployment-manifests/docker-compose.yml up -d'"
+                    ]) {
+                        echo 'Deploying to server...'
+                        // Replace DOCKER_URL in the local docker-compose.yml
+                        sh "sed -i 's|DOCKER_URL|${DOCKER_URL}|g' docker-compose.yml"
+
+                        // Copy the modified docker-compose.yml to the remote server
+                        sh "scp -i $SSH_KEY docker-compose.yml $SSH_USER@$SERVER:/opt/deployment-manifests/docker-compose.yml"
+
+                        // Execute the Docker Compose command on the remote server
+                        sh "ssh -i $SSH_KEY $SSH_USER@$SERVER 'docker-compose -f /opt/deployment-manifests/docker-compose.yml up -d'"
                     }
-               }
-           }
+                }
+            }
         }
     }
     post {
