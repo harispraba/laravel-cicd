@@ -129,7 +129,7 @@ pipeline {
                         ]) {
                             echo 'Deploying to server...'
                             sh "sed -i 's|DOCKER_URL|${DOCKER_URL}|g' docker-compose.yml"
-                            sh "scp -i $SSH_KEY -r docker-compose.yml $SSH_USER@$SERVER:/opt/deployment-manifests/"
+                            sh "ssh -i $SSH_KEY $SSH_USER@$SERVER 'cat >> /opt/deployment-manifests/docker-compose.yml' < docker-compose.yml"
                             sh "ssh -i $SSH_KEY $SSH_USER@$SERVER 'docker compose -f /opt/deployment-manifests/docker-compose.yml up -d'"
                     }
                }
