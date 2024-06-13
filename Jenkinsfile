@@ -132,10 +132,11 @@ pipeline {
                         sh "sed -i 's|DOCKER_URL|${DOCKER_URL}|g' docker-compose.yml"
                         sh "cat docker-compose.yml"
                         // Copy the modified docker-compose.yml to the remote server
-                        sh "scp -i $SSH_KEY docker-compose.yml $SSH_USER@$SERVER:/opt/deployment-manifests/docker-compose.yml"
-
+                        sh "echo $SSH_KEY > key.pem"
+                        sh "chmod 600 key.pem"
+                        sh "scp -i key.pem docker-compose.yml $SSH_USER@$SERVER:/opt/deployment-manifests/docker-compose.yml"
                         // Execute the Docker Compose command on the remote server
-                        sh "ssh -i $SSH_KEY $SSH_USER@$SERVER 'docker-compose -f /opt/deployment-manifests/docker-compose.yml up -d'"
+                        sh "ssh -i key.pem $SSH_USER@$SERVER 'docker-compose -f /opt/deployment-manifests/docker-compose.yml up -d'"
                     }
                 }
             }
