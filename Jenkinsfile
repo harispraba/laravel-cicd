@@ -124,7 +124,7 @@ pipeline {
            steps {
                script {
                     withCredentials([
-                        sshUserPrivateKey(credentialsId: 'server_deployment', keyFileVariable: 'SSH_KEY', usernameVariable: 'SSH_USER')
+                        sshUserPrivateKey(credentialsId: 'server_deployment', keyFileVariable: 'SSH_KEY', usernameVariable: 'SSH_USER'),
                         string(credentialsId: 'ip_server_deployment', variable: 'SERVER')
                         ]) {
                             echo 'Deploying to server...'
