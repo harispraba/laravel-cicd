@@ -127,17 +127,15 @@ pipeline {
                         sshUserPrivateKey(credentialsId: 'server_deployment', keyFileVariable: 'SSH_KEY', usernameVariable: 'SSH_USER'),
                         string(credentialsId: 'ip_server_deployment', variable: 'SERVER')
                     ]) {
-                        echo 'Deploying to server...'
-                        sh "mkdir -p ~/.ssh"
-                        sh "cp ${SSH_KEY} ~/.ssh/id_rsa"
-                        sh "chmod 600 ~/.ssh/id_rsa"
-                        // Replace DOCKER_URL in the local docker-compose.yml
-                        sh "sed -i 's|DOCKER_URL|${DOCKER_URL}|g' docker-compose.yml"
-                        sh "cat docker-compose.yml | grep ${DOCKER_URL}"
-                        // Copy the modified docker-compose.yml to the remote server
-                        sh "scp -v -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa $SSH_USER@$SERVER:/opt/deployment-manifests/docker-compose.yml"
-                        // Execute the Docker Compose command on the remote server
-                        sh "ssh -v -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa $SSH_USER@$SERVER 'docker-compose -f /opt/deployment-manifests/docker-compose.yml up -d'"
+                        sh '''
+                            mkdir -p ~/.ssh
+                            echo "$SSH_KEY" > ~/.ssh/id_rsa
+                            chmod 600 ~/.ssh/id_rsa
+                            sed -i 's|DOCKER_URL|${DOCKER_URL}|g' docker-compose.yml
+                            cat docker-compose.yml | grep ${DOCKER_URL}
+                            scp -v -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa docker-compose.yml $SSH_USER@$SERVER:/opt/deployment-manifests/docker-compose.yml
+                            ssh -v -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa $SSH_USER@$SERVER 'docker-compose -f /opt/deployment-manifests/docker-compose.yml up -d'
+                        '''
                     }
                 }
             }
