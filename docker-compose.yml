@@ -5,6 +5,7 @@ services:
     image: DOCKER_URL
     container_name: laravel-filament
     restart: always
+    pull_policy: always
     volumes:
       - web-app:/var/www
       - "${PWD}/env.prodution:/var/www/.env"
