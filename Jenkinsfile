@@ -128,8 +128,8 @@ pipeline {
                         string(credentialsId: 'ip_server_deployment', variable: 'SERVER')
                     ]) {
                         sh "sed -i 's|DOCKER_URL|${DOCKER_URL}|g' docker-compose.yml"
-                        sh "scp -v -o StrictHostKeyChecking=no -i ${SSH_KEY} docker-compose.yml $SSH_USER@$SERVER:/opt/deployment-manifests/docker-compose.yml"
-                        sh "ssh -v -o StrictHostKeyChecking=no -i ${SSH_KEY} $SSH_USER@$SERVER 'docker-compose -f /opt/deployment-manifests/docker-compose.yml up -d'"
+                        sh "scp -v -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa docker-compose.yml $SSH_USER@$SERVER:/opt/deployment-manifests/docker-compose.yml"
+                        sh "ssh -v -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa $SSH_USER@$SERVER 'docker-compose -f /opt/deployment-manifests/docker-compose.yml up -d'"
                     }
                 }
             }
