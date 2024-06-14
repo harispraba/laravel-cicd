@@ -8,10 +8,7 @@ pipeline {
         }
         stage('Checkout') {
             steps {
-                checkout scm: [
-                    $class: 'GitSCM',
-                    branches: [[name: '*/main']]
-                ]
+                checkout scm
             }
         }
         stage('Get Git Tag') {
