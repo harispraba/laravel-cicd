@@ -126,9 +126,7 @@ pipeline {
                         usernamePassword(credentialsId: 'container_registry', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASSWORD')
                     ]) {
                         sh "sed -i 's|DOCKER_URL|${DOCKER_URL}|g' docker-compose.yml"
-                        echo "SSH Key File: $SSH_KEY"
-                        echo "SSH User: $SSH_USER"
-                        echo "Server: $SERVER"
+                        sh "scp -i ${SSH_KEY} docker-compose.yml ${SSH_USER}@${SERVER}:~/"
                     }
                 }
             }
