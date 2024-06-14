@@ -8,7 +8,7 @@ services:
     volumes:
       - web-app:/var/www
       - type: bind
-        source: ${PWD}/.env.prodution
+        source: ${PWD}/env.prodution
         target: /var/www/.env
     depends_on:
       - mysql
