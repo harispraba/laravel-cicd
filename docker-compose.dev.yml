@@ -2,10 +2,10 @@ version: "3.8"
 name: laravel-app
 services:
   laravel-filament:
-    image: DOCKER_URL
-    # build:
-    #   context: .
-    #   dockerfile: Dockerfile
+    image: ghcr.io/laravel-filament/filament:latest
+    build:
+      context: .
+      dockerfile: Dockerfile
     container_name: laravel-filament
     restart: always
     volumes:
