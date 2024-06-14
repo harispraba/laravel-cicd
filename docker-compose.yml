@@ -7,7 +7,7 @@ services:
     restart: always
     volumes:
       - web-app:/var/www
-      - ".env.production:/var/www/.env"
+      - "./.env.production:/var/www/.env"
     depends_on:
       - mysql
     networks:
