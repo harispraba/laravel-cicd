@@ -125,10 +125,12 @@ pipeline {
                 script {
                     withCredentials([
                         sshUserPrivateKey(credentialsId: 'server_deployment', keyFileVariable: 'SSH_KEY', usernameVariable: 'SSH_USER'),
-                        string(credentialsId: 'ip_server_deployment', variable: 'SERVER')
+                        string(credentialsId: 'ip_server_deployment', variable: 'SERVER'),
+                        usernamePassword(credentialsId: 'container_registry', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASSWORD')
                     ]) {
                         sh "sed -i 's|DOCKER_URL|${DOCKER_URL}|g' docker-compose.yml"
                         sh "scp -v -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa -r docker-compose.yml $SSH_USER@$SERVER:/opt/deployment-manifests/docker-compose.yml"
+                        sh "ssh -v -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa $SSH_USER@$SERVER 'echo $DOCKER_PASSWORD | sudo docker login ${DOCKER_REGISTRY} -u $DOCKER_USER --password-stdin'"
                         sh "ssh -v -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa $SSH_USER@$SERVER 'sudo docker compose -f /opt/deployment-manifests/docker-compose.yml up -d'"
                     }
                 }
