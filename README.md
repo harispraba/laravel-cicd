@@ -167,6 +167,19 @@ password: admin
 10. Set the Which events would you like to trigger this webhook?: Let me select individual events, checklist Pushes and Branch or tag creation.
 11. Click Add webhook
 
+## Configure SSH Key in Jenkins
+1. Go to Jenkins > Manage Jenkins > Manage Credentials
+2. Click on the global domain
+3. Click Add Credentials
+4. Choose Kind: SSH Username with private key, you can create a new key or use an existing key: `ssh-keygen -t rsa -b 4096 -C -m PEM -f ~/.ssh/jenkins_key`
+5. Set the username and private key for the server deployment
+6. Set credentials ID: server_deployment
+7. Click Add Credentials ( For IP or Domain Server Deployment )
+8. Choose Secret Text
+9. Set the secret text for the server deployment IP or Domain
+10. Set credentials ID: ip_server_deployment
+11. Click OK
+
 ## Test the Pipeline
 1. Clone the repository
 2. Create some changes

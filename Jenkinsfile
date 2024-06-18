@@ -23,17 +23,21 @@ pipeline {
         stage('Parse Config') {
             steps {
                 script {
+                    def configFile = 'build-config.yaml'
+                    def yqCommand = { String query -> sh(script: "yq -C ${query} ${configFile}", returnStdout: true).trim() }
+
                     // Set the configuration variables App
-                    APP_NAME = sh(script: "cat build-config.yaml | /usr/bin/yq -C .config.app.name", returnStdout: true).trim()
-                    APP_DESCRIPTION = sh(script: "cat build-config.yaml | /usr/bin/yq -C .config.app.description", returnStdout: true).trim()
-                    MAINTAINER = sh(script: "cat build-config.yaml | /usr/bin/yq -C .config.maintainer", returnStdout: true).trim()
+                    APP_NAME = yqCommand(".config.app.name")
+                    APP_DESCRIPTION = yqCommand(".config.app.description")
+                    MAINTAINER = yqCommand(".config.maintainer")
                     // Set the configuration variables Docker
-                    DOCKER_REGISTRY = sh(script: "cat build-config.yaml | /usr/bin/yq -C .config.registry.url", returnStdout: true).trim()
-                    DOCKER_IMAGE = sh(script: "cat build-config.yaml | /usr/bin/yq -C .config.registry.image", returnStdout: true).trim()
-                    DOCKER_USERNAME = sh(script: "cat build-config.yaml | /usr/bin/yq -C .config.registry.username", returnStdout: true).trim()
-                    DOCKER_URL = sh(script: "echo ${DOCKER_REGISTRY}/${DOCKER_USERNAME}/${DOCKER_IMAGE}:${GIT_TAG}", returnStdout: true).trim()
+                    DOCKER_REGISTRY = yqCommand(".config.registry.url")
+                    DOCKER_IMAGE = yqCommand(".config.registry.image")
+                    DOCKER_USERNAME = yqCommand(".config.registry.username")
+                    DOCKER_URL = "${DOCKER_REGISTRY}/${DOCKER_USERNAME}/${DOCKER_IMAGE}:${GIT_TAG}"
                     // Set the configuration SonarQube
-                    SONAR_PROJECT_KEY = sh(script: "cat build-config.yaml | /usr/bin/yq -C .config.sonarqube.project_key", returnStdout: true).trim()
+                    SONAR_PROJECT_KEY = yqCommand(".config.sonarqube.project_key")
+
                     // Display the configuration
                     echo "App Name: ${APP_NAME}"
                     echo "App Description: ${APP_DESCRIPTION}"
@@ -57,6 +61,7 @@ pipeline {
                                 echo "No vulnerabilities found in the source code."
                             } else {
                                 echo "Vulnerabilities found in the source code."
+                                // Uncomment the following line to fail the build if vulnerabilities are found
                                 // error "Vulnerabilities found in the source code."
                             }
                         }
@@ -94,6 +99,7 @@ pipeline {
                         echo "No vulnerabilities found in the Docker image."
                     } else {
                         echo "Vulnerabilities found in the Docker image."
+                        // Uncomment the following line to fail the build if vulnerabilities are found
                         // error "Vulnerabilities found in the Docker image."
                     }
                 }
