@@ -126,6 +126,8 @@ pipeline {
                         usernamePassword(credentialsId: 'container_registry', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASSWORD')
                     ]) {
                         sshagent(['server_deployment']) {
+                            sh "[ -d ~/.ssh ] || mkdir ~/.ssh && chmod 0700 ~/.ssh"
+                            sh "ssh-keyscan -t rsa,dsa ${SERVER} >> ~/.ssh/known_hosts"
                             sh "sed -i 's|DOCKER_URL|${DOCKER_URL}|g' docker-compose.yml"
                             sh "scp -o StrictHostKeyChecking=no docker-compose.yml ${SSH_USER}@${SERVER}:/opt/deployment-manifests/docker-compose.yml"
                             sh "ssh -o StrictHostKeyChecking=no ${SSH_USER}@${SERVER} 'docker login ${DOCKER_REGISTRY} -u ${DOCKER_USER} -p ${DOCKER_PASSWORD}'"
