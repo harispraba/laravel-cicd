@@ -129,9 +129,9 @@ pipeline {
                             sh "[ -d ~/.ssh ] || mkdir ~/.ssh && chmod 0700 ~/.ssh"
                             sh "ssh-keyscan -t rsa,dsa ${SERVER} >> ~/.ssh/known_hosts"
                             sh "sed -i 's|DOCKER_URL|${DOCKER_URL}|g' docker-compose.yml"
-                            sh "scp -o StrictHostKeyChecking=no -i ${SSH_KEY} docker-compose.yml ${SSH_USER}@${SERVER}:/opt/deployment-manifests/docker-compose.yml"
-                            sh "ssh -o StrictHostKeyChecking=no -i ${SSH_KEY} ${SSH_USER}@${SERVER} 'docker login ${DOCKER_REGISTRY} -u ${DOCKER_USER} -p ${DOCKER_PASSWORD}'"
-                            sh "ssh -o StrictHostKeyChecking=no -i ${SSH_KEY} ${SSH_USER}@${SERVER} 'docker-compose -f /opt/deployment-manifests/docker-compose.yml up -d'"
+                            sh "scp -o StrictHostKeyChecking=no docker-compose.yml ${SSH_USER}@${SERVER}:/opt/deployment-manifests/docker-compose.yml"
+                            sh "ssh -o StrictHostKeyChecking=no ${SSH_USER}@${SERVER} 'docker login ${DOCKER_REGISTRY} -u ${DOCKER_USER} -p ${DOCKER_PASSWORD}'"
+                            sh "ssh -o StrictHostKeyChecking=no ${SSH_USER}@${SERVER} 'docker-compose -f /opt/deployment-manifests/docker-compose.yml up -d'"
                         }
                     }
                 }
