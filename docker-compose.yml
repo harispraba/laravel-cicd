@@ -6,9 +6,9 @@ services:
     container_name: laravel-filament
     restart: always
     pull_policy: always
+    env_file: .env.production
     volumes:
       - web-app:/var/www
-      - "${PWD}/env.prodution:/var/www/.env"
     depends_on:
       - mysql
     networks:
