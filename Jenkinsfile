@@ -120,15 +120,17 @@ pipeline {
         stage('Deploy to Server') {
             steps {
                 script {
-                    sshagent(withCredentials([
-                        sshUserPrivateKey(credentialsId: 'server_deployment', keyFileVariable: 'SSH_KEY', usernameVariable: 'SSH_USER'),
+                    withCredentials([
+                        sshUserPrivateKey(credentialsId: 'server_deployment', usernameVariable: 'SSH_USER'),
                         string(credentialsId: 'ip_server_deployment', variable: 'SERVER'),
                         usernamePassword(credentialsId: 'container_registry', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASSWORD')
-                    ])) {
-                        sh "sed -i 's|DOCKER_URL|${DOCKER_URL}|g' docker-compose.yml"
-                        sh "scp -i ${SSH_KEY} docker-compose.yml ${SSH_USER}@${SERVER}:/opt/deployment-manifests/docker-compose.yml"
-                        sh "ssh -i ${SSH_KEY} ${SSH_USER}@${SERVER} 'docker login ${DOCKER_REGISTRY} -u ${DOCKER_USER} -p ${DOCKER_PASSWORD}'"
-                        sh "ssh -i ${SSH_KEY} ${SSH_USER}@${SERVER} 'docker-compose -f /opt/deployment-manifests/docker-compose.yml up -d'"
+                    ]){
+                        sshagent(['server_deployment']) {
+                            sh "sed -i 's|DOCKER_URL|${DOCKER_URL}|g' docker-compose.yml"
+                            sh "scp -o StrictHostKeyChecking=no docker-compose.yml ${SSH_USER}@${SERVER}:/opt/deployment-manifests/docker-compose.yml"
+                            sh "ssh -o StrictHostKeyChecking=no ${SSH_USER}@${SERVER} 'docker login ${DOCKER_REGISTRY} -u ${DOCKER_USER} -p ${DOCKER_PASSWORD}'"
+                            sh "ssh -o StrictHostKeyChecking=no ${SSH_USER}@${SERVER} 'docker-compose -f /opt/deployment-manifests/docker-compose.yml up -d'"
+                        }
                     }
                 }
             }
