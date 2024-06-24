@@ -132,7 +132,7 @@ pipeline {
                             sh "ssh-keyscan -t rsa,dsa ${SERVER} >> ~/.ssh/known_hosts"
                             sh "sed -i 's|DOCKER_URL|${DOCKER_URL}|g' docker-compose.yml"
                             sh "scp -o StrictHostKeyChecking=no docker-compose.yml ${SSH_USER}@${SERVER}:/opt/deployment-manifests/docker-compose.yml"
-                            sh "ssh -o StrictHostKeyChecking=no ${SSH_USER}@${SERVER} 'sudo docker login ${DOCKER_REGISTRY} -u ${DOCKER_USER} -p ${DOCKER_PASSWORD}'"
+                            // sh "ssh -o StrictHostKeyChecking=no ${SSH_USER}@${SERVER} 'sudo docker login ${DOCKER_REGISTRY} -u ${DOCKER_USER} -p ${DOCKER_PASSWORD}'"
                             sh "ssh -o StrictHostKeyChecking=no ${SSH_USER}@${SERVER} 'sudo docker compose -f /opt/deployment-manifests/docker-compose.yml up -d'"
                         }
                     }
