@@ -113,7 +113,6 @@ pipeline {
             steps {
                 script {
                     echo 'Pushing Docker image...'
-                    sh "docker push ${DOCKER_URL}"
                     docker.withRegistry('https://asia-southeast2-docker.pkg.dev', 'container_registry') {
                         dockerImage.push()
                     }
