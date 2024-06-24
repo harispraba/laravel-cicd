@@ -5,8 +5,10 @@ config:
     description: My App
     domain: http://localhost
   registry:
-    url: ghcr.io
+    url: asia-southeast2-docker.pkg.dev
     username: jawaracloud
+    gcp_project: rect-devops-training
+    ar_registry: rectgistry
     image: laravel-filament
   sonarqube:
     project_key: jenkins-laravel

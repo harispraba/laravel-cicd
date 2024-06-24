@@ -34,7 +34,9 @@ pipeline {
                     DOCKER_REGISTRY = yqCommand(".config.registry.url")
                     DOCKER_IMAGE = yqCommand(".config.registry.image")
                     DOCKER_USERNAME = yqCommand(".config.registry.username")
-                    DOCKER_URL = "${DOCKER_REGISTRY}/${DOCKER_USERNAME}/${DOCKER_IMAGE}:${GIT_TAG}"
+                    GCP_PROJECT = yqCommand(".config.registry.gcp_project")
+                    AR_REGISTRY = yqCommand(".config.registry.ar_registry")
+                    DOCKER_URL = "${DOCKER_REGISTRY}/${GCP_PROJECT}/${AR_REGISTRY}/${DOCKER_IMAGE}:${GIT_TAG}"
                     // Set the configuration SonarQube
                     SONAR_PROJECT_KEY = yqCommand(".config.sonarqube.project_key")
 
