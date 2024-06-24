@@ -1,3 +1,5 @@
+def dockerImage = ''
+
 pipeline {
     agent any
     stages {
@@ -85,7 +87,7 @@ pipeline {
             steps {
                 script {
                     echo 'Building Docker image...'
-                    sh "docker build -t ${DOCKER_URL} ."
+                    dockerImage = docker.build DOCKER_URL
                 }
             }
         }
@@ -107,21 +109,14 @@ pipeline {
                 }
             }
         }
-        stage('Docker Login') {
-            steps {
-                script {
-                    withCredentials([usernamePassword(credentialsId: 'container_registry', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASSWORD')]) {
-                        echo "Logging in to Docker registry ${DOCKER_REGISTRY}"
-                        sh "echo $DOCKER_PASSWORD | docker login ${DOCKER_REGISTRY} -u $DOCKER_USER --password-stdin"
-                    }
-                }
-            }
-        }
         stage('Image Push') {
             steps {
                 script {
                     echo 'Pushing Docker image...'
                     sh "docker push ${DOCKER_URL}"
+                    docker.withRegistry('https://asia-southeast2-docker.pkg.dev', 'container_registry') {
+                        dockerImage.push()
+                    }
                 }
             }
         }
