@@ -143,11 +143,14 @@ pipeline {
         }
         stage('Check service liveness') {
             steps {
+                options {
+                    timeout(time: 5, unit: 'MINUTES') 
+                }
                 script {
                     withCredentials([
                         string(credentialsId: 'ip_server_deployment', variable: 'SERVER')
                 ]) {
-                    sh "for i in {1..5}; do status=\"\$(curl -s -o /dev/null -w \"%{http_code}\" http://${SERVER})\"; if [ \"\$status\" = 200 ]; then break; else echo 'Service not up yet, retrying in 10 seconds...'; fi; sleep 10; done"
+                    sh "for i in {1..12}; do status=\"\$(curl -s -o /dev/null -w \"%{http_code}\" http://${SERVER})\"; if [ \"\$status\" = 200 ]; then break; else echo 'Service not up yet, retrying in 10 seconds...'; fi; sleep 10; done"
                     }
                 }
             }

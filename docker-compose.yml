@@ -9,6 +9,7 @@ services:
     env_file: .env.production
     volumes:
       - web-app:/var/www
+      - /opt/deployment-manifests/.env.production:/var/www/.env
     depends_on:
       - mysql
     networks:
