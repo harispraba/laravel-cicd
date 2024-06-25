@@ -150,7 +150,7 @@ pipeline {
                     withCredentials([
                         string(credentialsId: 'ip_server_deployment', variable: 'SERVER')
                 ]) {
-                    sh "for i in {1..12}; do status=\"\$(curl -s -o /dev/null -w \"%{http_code}\" http://${SERVER})\"; if [ \"\$status\" = 200 ]; then break; else echo 'Service not up yet, retrying in 10 seconds...'; fi; sleep 10; done"
+                    sh "for i in {1..12}; do status=\"\$(curl -s -o /dev/null -w \"%{http_code}\" http://${SERVER})\"; if [ \"\$status\" = 200 ]; then echo 'Service running'; break; else echo 'Service not up yet, retrying in 10 seconds...'; fi; sleep 10; done"
                     }
                 }
             }
