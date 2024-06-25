@@ -1,6 +1,9 @@
 def dockerImage = ''
 
 pipeline {
+    options {
+        timeout(time: 10, unit: 'MINUTES') 
+    }
     agent any
     triggers {
         githubPush()
@@ -143,9 +146,6 @@ pipeline {
         }
         stage('Check service liveness') {
             steps {
-                options {
-                    timeout(time: 5, unit: 'MINUTES') 
-                }
                 script {
                     withCredentials([
                         string(credentialsId: 'ip_server_deployment', variable: 'SERVER')
