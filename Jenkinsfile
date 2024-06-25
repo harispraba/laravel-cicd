@@ -147,7 +147,9 @@ pipeline {
                     withCredentials([
                         string(credentialsId: 'ip_server_deployment', variable: 'SERVER')
                 ]) {
-                    sh "for i in {1..5}; do status='$(curl -s -o /dev/null -w "%{http_code}" http://${SERVER})'; if [ "$status" = 502 ]; then echo 'Service not up yet, retrying in 10 seconds...'; fi; sleep 10; done"
+                    sh '''
+                        for i in {1..5}; do status="$(curl -s -o /dev/null -w "%{http_code}" http://${SERVER})"; if [ "$status" = 502 ]; then echo 'Service not up yet, retrying in 10 seconds...'; fi; sleep 10; done"
+                    '''
                     // sh "curl -s -o /dev/null -w '%{http_code}' http://"
                 }
             }
